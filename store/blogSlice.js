@@ -2,6 +2,7 @@ import axios from "axios";
 import STATUSES from "../src/globals/status/statuses";
 import { createSlice } from "@reduxjs/toolkit";
 import { act } from "react";
+import API from "../src/http";
 
 const blogSlice = createSlice({
   name: 'blog',
@@ -30,8 +31,7 @@ export function fetchBlogs() {
   return async function fetchBlogsThunk(dispatch) {
     dispatch(setStatus(STATUSES.LOADING))
     try {
-      const URL = 'https://react30.onrender.com/api/user/blog'
-      const response = await axios.get(URL)
+      const response = await API.get('blog')
       if (response.status === 200) {
         dispatch(setStatus(STATUSES.SUCCESS))
         dispatch(setData(response.data.data))
@@ -48,8 +48,7 @@ export function fetchBlog(id) {
   return async function fetchBlogThunk(dispatch) {
     dispatch(setStatus(STATUSES.LOADING))
     try {
-      const URL = `https://react30.onrender.com/api/user/blog/${id}`
-      const response = await axios.get(URL)
+      const response = await API.get(`blog/${id}`)
       if (response.status === 200) {
         dispatch(setBlog(response.data.data))
         dispatch(setStatus(STATUSES.SUCCESS))
@@ -66,13 +65,7 @@ export function deleteBlog(id) {
   return async function deleteBlogThunk(dispatch) {
     dispatch(setStatus(STATUSES.LOADING))
     try {
-      const URL = `https://react30.onrender.com/api/user/blog/${id}`
-      const response = await axios.delete(URL, {
-        headers: {
-          Authorization: localStorage.getItem('jwttoken')
-        }
-      })
-
+      const response = await API.delete(`blog/${id}`)
       if (response.status === 200) {
         dispatch(setStatus(STATUSES.SUCCESS))
       } else {
@@ -88,13 +81,7 @@ export function addBlog(data) {
   return async function addBlogThunk(dispatch) {
     dispatch(setStatus(STATUSES.LOADING))
     try {
-      const URL = `https://react30.onrender.com/api/user/blog`
-      const response = await axios.post(URL, data, {
-        headers: {
-          Authorization: localStorage.getItem('jwttoken'),
-          "Content-Type": "multipart/form-data"
-        }
-      })
+      const response = await API.post('blog', data)
       if (response.status === 201) {
         dispatch(setStatus(STATUSES.SUCCESS))
       } else {
@@ -110,13 +97,7 @@ export function editBlog(id, data) {
   return async function editBlogThunk(dispatch) {
     dispatch(setStatus(STATUSES.LOADING))
     try {
-      const URL = `https://react30.onrender.com/api/user/blog/${id}`
-      const response = await axios.patch(URL, data, {
-        headers: {
-          Authorization: localStorage.getItem('jwttoken'),
-          "Content-Type": "multipart/form-data"
-        }
-      })
+      const response = await API.patch(`blog/${id}`, data)
       if (response.status === 200) {
         dispatch(setStatus(STATUSES.SUCCESS))
       } else {

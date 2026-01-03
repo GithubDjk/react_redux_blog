@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import STATUSES from "../src/globals/status/statuses";
+import API from "../src/http";
 
 const authSlice = createSlice({
     name: 'auth',
@@ -13,55 +13,51 @@ const authSlice = createSlice({
         setUser(state, action) {
             state.user = action.payload
         },
-        setToken(state, action){
+        setToken(state, action) {
             state.token = action.payload
         },
-        setStatus(state, action){
+        setStatus(state, action) {
             state.status = action.payload
         }
     }
 })
 
-export const {setUser, setStatus, setToken} = authSlice.actions
+export const { setUser, setStatus, setToken } = authSlice.actions
 export default authSlice.reducer
 
-export function register(data){
-    return async function registerThunk(dispatch){
+export function register(data) {
+    return async function registerThunk(dispatch) {
         dispatch(setStatus(STATUSES.LOADING))
         try {
-            const URL = 'https://react30.onrender.com/api/user/register'
-            const response = await axios.post(URL, data, {
-
-            })
-            if(response.status == 201){
+            const response = await API.post('register', data)
+            if (response.status == 201) {
                 dispatch(setUser(data))
                 dispatch(setStatus(STATUSES.SUCCESS))
-            }else {
+            } else {
                 dispatch(setStatus(STATUSES.ERROR))
             }
         } catch (error) {
-                dispatch(setStatus(STATUSES.ERROR))
+            dispatch(setStatus(STATUSES.ERROR))
         }
     }
 }
 
-export function login(data){
-    return async function loginThunk(dispatch){
+export function login(data) {
+    return async function loginThunk(dispatch) {
         dispatch(setStatus(STATUSES.LOADING))
         try {
-            const URL = 'https://react30.onrender.com/api/user/login'
-            const response = await axios.post(URL, data)
-            if(response.status == 200){
-                if(response?.data?.token){
+            const response = await API.post('login', data)
+            if (response.status == 200) {
+                if (response?.data?.token) {
                     localStorage.setItem('jwttoken', response.data.token)
                     dispatch(setToken(response.data.token))
                 }
                 dispatch(setStatus(STATUSES.SUCCESS))
-            }else {
+            } else {
                 dispatch(setStatus(STATUSES.ERROR))
             }
         } catch (error) {
-                dispatch(setStatus(STATUSES.ERROR))
+            dispatch(setStatus(STATUSES.ERROR))
         }
     }
 }
